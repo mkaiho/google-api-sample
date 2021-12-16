@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: ./docker/workspace/Dockerfile
+    container_name: google-api-sample-workspace
+    tty: true
+    volumes:
+      - .:/go/src/github.com/mkaiho/google-api-sample
+    working_dir: /go/src/github.com/mkaiho/google-api-sample
+    ports:
+      - 3000:3000
