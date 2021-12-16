@@ -16,3 +16,6 @@
 
 # SSH keys
 .ssh/
+
+# output go binaries
+bin/
