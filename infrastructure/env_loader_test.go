@@ -66,8 +66,8 @@ func TestLoadEnvToStruct(t *testing.T) {
 			},
 		},
 	}
-	os.Setenv("TEST_ENV", envValue)
 	for _, tt := range tests {
+		os.Setenv("TEST_ENV", envValue)
 		t.Run(tt.name, func(t *testing.T) {
 			err := LoadEnvToStruct(tt.args.prefix, tt.args.dest)
 			if !tt.wantErr(t, err) {
@@ -75,6 +75,7 @@ func TestLoadEnvToStruct(t *testing.T) {
 			}
 			assert.Equal(t, tt.want, tt.args.dest, "LoadEnvToStruct() got = %v, want %v", tt.args.dest, tt.want)
 		})
+		os.Clearenv()
 	}
 }
 
@@ -107,12 +108,12 @@ func TestLoadEnvString(t *testing.T) {
 			want: func() *string { value := testValue; return &value }(),
 		},
 	}
-	os.Setenv(keyName, testValue)
 	for _, tt := range tests {
+		os.Setenv(keyName, testValue)
 		t.Run(tt.name, func(t *testing.T) {
 			got := LoadEnvString(tt.args.key, tt.args.defaultValue)
 			assert.Equal(t, tt.want, got, "LoadEnvString() = %v, want %v", got, tt.want)
 		})
+		os.Clearenv()
 	}
-	os.Setenv(keyName, "")
 }
