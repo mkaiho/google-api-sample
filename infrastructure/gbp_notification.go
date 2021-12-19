@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/mkaiho/google-api-sample/adapter/gbpapi"
 	"google.golang.org/api/mybusinessnotifications/v1"
@@ -31,5 +32,25 @@ func NewGBPNotification(ctx context.Context, config gbpapi.GBPConfig) (*gbpNotif
 
 	return &gbpNotification{
 		client: client,
+	}, nil
+}
+
+/** Get notification settings **/
+/** See: https://developers.google.com/my-business/reference/notifications/rest/v1/accounts/getNotificationSetting **/
+func (n *gbpNotification) GetNotificationSetting(ctx context.Context, accountID gbpapi.AccountID) (*gbpapi.NotificationSetting, error) {
+	name := gbpapi.NewNotificationSettingName(accountID)
+	res, err := n.client.Accounts.GetNotificationSetting(name.String()).Context(ctx).Do()
+	if err != nil {
+		return nil, fmt.Errorf("failed to Notifications.accounts.getNotificationSetting request: %w", err)
+	}
+	notificationTypes, err := gbpapi.ParseNotificationTypes(res.NotificationTypes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert Notifications.accounts.getNotificationSetting response: %w", err)
+	}
+
+	return &gbpapi.NotificationSetting{
+		AccountID:         accountID,
+		TopicName:         res.PubsubTopic,
+		NotificationTypes: notificationTypes,
 	}, nil
 }
