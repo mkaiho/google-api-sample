@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"cloud.google.com/go/pubsub"
 	"github.com/gin-gonic/gin"
 	"github.com/mkaiho/google-api-sample/infrastructure"
 	"golang.org/x/oauth2"
@@ -24,6 +25,8 @@ func main() {
 		RedirectURL:  gbpConfig.RedirectURL(),
 		Scopes: []string{
 			"https://www.googleapis.com/auth/business.manage",
+			pubsub.ScopeCloudPlatform,
+			pubsub.ScopePubSub,
 		},
 	}
 
