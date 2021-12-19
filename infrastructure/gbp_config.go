@@ -1,12 +1,22 @@
 package infrastructure
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mkaiho/google-api-sample/adapter/gbpapi"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/option"
 )
 
+var gbpScopes = []string{
+	"https://www.googleapis.com/auth/business.manage",
+}
+
 var _ gbpapi.GBPCredential = (*gbpCredential)(nil)
+
+/** Credentials for GBP API **/
 
 func NewGBPCredentialEnv(clientID string, secret string, refreshToken string) gbpapi.GBPCredential {
 	return &gbpCredential{
@@ -48,4 +58,21 @@ func (c *gbpCredential) ClientSecret() string {
 
 func (c *gbpCredential) RefreshToken() string {
 	return c.refreshToken
+}
+
+/** Client option for GBP API **/
+
+func newGBPOption(ctx context.Context, credentials gbpapi.GBPCredential) option.ClientOption {
+	config := oauth2.Config{
+		ClientID:     credentials.ClientID(),
+		ClientSecret: credentials.ClientSecret(),
+		Endpoint:     google.Endpoint,
+		RedirectURL:  "",
+		Scopes:       gbpScopes,
+	}
+	tokenSource := config.TokenSource(ctx, &oauth2.Token{
+		RefreshToken: credentials.RefreshToken(),
+	})
+
+	return option.WithTokenSource(tokenSource)
 }
