@@ -19,3 +19,7 @@
 
 # output go binaries
 bin/
+
+# environment variables setting
+.envrc
+.env/
