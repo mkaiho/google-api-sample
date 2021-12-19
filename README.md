@@ -14,5 +14,8 @@ $ make build
 ## Run binary
 
 ```.sh
-$ GOOGLE_API_KEY=<Google API Key> ./bin/sample
+$ GBP_CLIENT_ID=<Google Client ID> \
+  GBP_CLIENT_SECRET=<Google Client Secret> \
+  GBP_REFRESH_TOKEN=<Refresh token> \
+  ./bin/sample
 ```
