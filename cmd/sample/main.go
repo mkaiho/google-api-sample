@@ -8,12 +8,14 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	gbpCredentials, err := infrastructure.LoadGBPCredentialEnv()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 
-	_, err = infrastructure.NewGBPNotification(context.Background(), gbpCredentials)
+	_, err = infrastructure.NewGBPNotification(ctx, gbpCredentials)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
