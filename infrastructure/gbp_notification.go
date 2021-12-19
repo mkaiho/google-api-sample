@@ -16,14 +16,14 @@ type gbpNotification struct {
 	client *mybusinessnotifications.Service
 }
 
-func NewGBPNotification(ctx context.Context, credentials gbpapi.GBPCredential) (*gbpNotification, error) {
+func NewGBPNotification(ctx context.Context, config gbpapi.GBPConfig) (*gbpNotification, error) {
 	if ctx == nil {
 		return nil, errors.New("ctx is required")
 	}
-	if credentials == nil {
-		return nil, errors.New("credentials is required")
+	if config == nil {
+		return nil, errors.New("config is required")
 	}
-	opts := newGBPOption(ctx, credentials)
+	opts := newGBPOption(ctx, config)
 	client, err := mybusinessnotifications.NewService(ctx, opts)
 	if err != nil {
 		return nil, err

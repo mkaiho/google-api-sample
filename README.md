@@ -11,11 +11,22 @@
 $ make build
 ```
 
-## Run binary
+## Run sample binary
 
 ```.sh
 $ GBP_CLIENT_ID=<Google Client ID> \
   GBP_CLIENT_SECRET=<Google Client Secret> \
   GBP_REFRESH_TOKEN=<Refresh token> \
+  GBP_REDIRECT_URL=<Redirect URL> \
   ./bin/sample
+```
+
+## Run token-reciever server binary
+
+```.sh
+$ GBP_CLIENT_ID=<Google Client ID> \
+  GBP_CLIENT_SECRET=<Google Client Secret> \
+  GBP_REFRESH_TOKEN=<Refresh token> \
+  GBP_REDIRECT_URL=<Redirect URL> \
+  ./bin/token-reciever
 ```

@@ -8,62 +8,68 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewGBPCredentialEnv(t *testing.T) {
+func TestNewGBPConfigEnv(t *testing.T) {
 	type args struct {
 		clientID     string
 		secret       string
 		refreshToken string
+		redirectURL  string
 	}
 	tests := []struct {
 		name string
 		args args
-		want gbpapi.GBPCredential
+		want gbpapi.GBPConfig
 	}{
 		{
-			name: "Return GBPCredential",
+			name: "Return GBPConfig",
 			args: args{
 				clientID:     "dummy_id",
 				secret:       "dummy_secret",
 				refreshToken: "dummy_refresh_token",
+				redirectURL:  "http://xxx.yyy.com",
 			},
-			want: &gbpCredential{
+			want: &gbpConfig{
 				clientID:     "dummy_id",
 				secret:       "dummy_secret",
 				refreshToken: "dummy_refresh_token",
+				redirectURL:  "http://xxx.yyy.com",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewGBPCredentialEnv(tt.args.clientID, tt.args.secret, tt.args.refreshToken)
-			assert.Equal(t, tt.want, got, "NewGBPCredentialEnv() = %v, want %v", got, tt.want)
+			got := NewGBPConfigEnv(tt.args.clientID, tt.args.secret, tt.args.refreshToken, tt.args.redirectURL)
+			assert.Equal(t, tt.want, got, "NewGBPConfigEnv() = %v, want %v", got, tt.want)
 		})
 	}
 }
 
-func TestLoadGBPCredentialEnv(t *testing.T) {
+func TestLoadGBPConfigEnv(t *testing.T) {
 	type fields struct {
 		clientID     string
 		secret       string
 		refreshToken string
+		redirectURL  string
 	}
 	tests := []struct {
 		name    string
 		fields  fields
-		want    gbpapi.GBPCredential
+		want    gbpapi.GBPConfig
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
-			name: "Load env and return GBPCredential",
+			name: "Load env and return GBPConfig",
 			fields: fields{
 				clientID:     "dummy_id",
 				secret:       "dummy_secret",
 				refreshToken: "dummy_refresh_token",
+				redirectURL:  "http://xxx.yyy.com",
 			},
-			want: &gbpCredential{
+			want: &gbpConfig{
 				clientID:     "dummy_id",
 				secret:       "dummy_secret",
 				refreshToken: "dummy_refresh_token",
+				redirectURL:  "http://xxx.yyy.com",
 			},
 			wantErr: assert.NoError,
 		},
@@ -73,11 +79,12 @@ func TestLoadGBPCredentialEnv(t *testing.T) {
 				clientID:     "",
 				secret:       "dummy_secret",
 				refreshToken: "dummy_refresh_token",
+				redirectURL:  "http://xxx.yyy.com",
 			},
 			want: nil,
 			wantErr: func(tt assert.TestingT, e error, i ...interface{}) bool {
-				want := "failed to GBP credentials: "
-				return assert.Contains(tt, e.Error(), want, "LoadGBPCredentialEnv() error = %v, wantErr %v", e, want)
+				want := "failed to GBP configuration: "
+				return assert.Contains(tt, e.Error(), want, "LoadGBPConfigEnv() error = %v, wantErr %v", e, want)
 			},
 		},
 		{
@@ -86,11 +93,12 @@ func TestLoadGBPCredentialEnv(t *testing.T) {
 				clientID:     "dummy_id",
 				secret:       "",
 				refreshToken: "dummy_refresh_token",
+				redirectURL:  "http://xxx.yyy.com",
 			},
 			want: nil,
 			wantErr: func(tt assert.TestingT, e error, i ...interface{}) bool {
-				want := "failed to GBP credentials: "
-				return assert.Contains(tt, e.Error(), want, "LoadGBPCredentialEnv() error = %v, wantErr %v", e, want)
+				want := "failed to GBP configuration: "
+				return assert.Contains(tt, e.Error(), want, "LoadGBPConfigEnv() error = %v, wantErr %v", e, want)
 			},
 		},
 		{
@@ -99,11 +107,26 @@ func TestLoadGBPCredentialEnv(t *testing.T) {
 				clientID:     "dummy_id",
 				secret:       "dummy_secret",
 				refreshToken: "",
+				redirectURL:  "http://xxx.yyy.com",
 			},
 			want: nil,
 			wantErr: func(tt assert.TestingT, e error, i ...interface{}) bool {
-				want := "failed to GBP credentials: "
-				return assert.Contains(tt, e.Error(), want, "LoadGBPCredentialEnv() error = %v, wantErr %v", e, want)
+				want := "failed to GBP configuration: "
+				return assert.Contains(tt, e.Error(), want, "LoadGBPConfigEnv() error = %v, wantErr %v", e, want)
+			},
+		},
+		{
+			name: "Return error when environment valirable GBP_REDIRECT_URL is unset",
+			fields: fields{
+				clientID:     "dummy_id",
+				secret:       "dummy_secret",
+				refreshToken: "dummy_refresh_token",
+				redirectURL:  "",
+			},
+			want: nil,
+			wantErr: func(tt assert.TestingT, e error, i ...interface{}) bool {
+				want := "failed to GBP configuration: "
+				return assert.Contains(tt, e.Error(), want, "LoadGBPConfigEnv() error = %v, wantErr %v", e, want)
 			},
 		},
 	}
@@ -117,18 +140,21 @@ func TestLoadGBPCredentialEnv(t *testing.T) {
 		if len(tt.fields.refreshToken) != 0 {
 			os.Setenv("GBP_REFRESH_TOKEN", tt.fields.refreshToken)
 		}
+		if len(tt.fields.redirectURL) != 0 {
+			os.Setenv("GBP_REDIRECT_URL", tt.fields.redirectURL)
+		}
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := LoadGBPCredentialEnv()
+			got, err := LoadGBPConfigEnv()
 			if !tt.wantErr(t, err) {
 				return
 			}
-			assert.Equal(t, tt.want, got, "LoadGBPCredentialEnv() = %v, want %v", got, tt.want)
+			assert.Equal(t, tt.want, got, "LoadGBPConfigEnv() = %v, want %v", got, tt.want)
 		})
 		os.Clearenv()
 	}
 }
 
-func Test_gbpCredential_ClientID(t *testing.T) {
+func Test_gbpConfig_ClientID(t *testing.T) {
 	type fields struct {
 		clientID     string
 		secret       string
@@ -149,18 +175,18 @@ func Test_gbpCredential_ClientID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &gbpCredential{
+			c := &gbpConfig{
 				clientID:     tt.fields.clientID,
 				secret:       tt.fields.secret,
 				refreshToken: tt.fields.refreshToken,
 			}
 			got := c.ClientID()
-			assert.Equal(t, tt.want, got, "gbpCredential.ClientID() = %v, want %v", got, tt.want)
+			assert.Equal(t, tt.want, got, "gbpConfig.ClientID() = %v, want %v", got, tt.want)
 		})
 	}
 }
 
-func Test_gbpCredential_ClientSecret(t *testing.T) {
+func Test_gbpConfig_ClientSecret(t *testing.T) {
 	type fields struct {
 		clientID     string
 		secret       string
@@ -181,18 +207,18 @@ func Test_gbpCredential_ClientSecret(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &gbpCredential{
+			c := &gbpConfig{
 				clientID:     tt.fields.clientID,
 				secret:       tt.fields.secret,
 				refreshToken: tt.fields.refreshToken,
 			}
 			got := c.ClientSecret()
-			assert.Equal(t, tt.want, got, "gbpCredential.ClientSecret() = %v, want %v", got, tt.want)
+			assert.Equal(t, tt.want, got, "gbpConfig.ClientSecret() = %v, want %v", got, tt.want)
 		})
 	}
 }
 
-func Test_gbpCredential_RefreshToken(t *testing.T) {
+func Test_gbpConfig_RefreshToken(t *testing.T) {
 	type fields struct {
 		clientID     string
 		secret       string
@@ -213,13 +239,48 @@ func Test_gbpCredential_RefreshToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &gbpCredential{
+			c := &gbpConfig{
 				clientID:     tt.fields.clientID,
 				secret:       tt.fields.secret,
 				refreshToken: tt.fields.refreshToken,
 			}
 			got := c.RefreshToken()
-			assert.Equal(t, tt.want, got, "gbpCredential.RefreshToken() = %v, want %v", got, tt.want)
+			assert.Equal(t, tt.want, got, "gbpConfig.RefreshToken() = %v, want %v", got, tt.want)
+		})
+	}
+}
+
+func Test_gbpConfig_RedirectURL(t *testing.T) {
+	type fields struct {
+		clientID     string
+		secret       string
+		refreshToken string
+		redirectURL  string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name: "Return redirect URL",
+			fields: fields{
+				redirectURL: "http://xxx.yyy.com",
+			},
+			want: "http://xxx.yyy.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &gbpConfig{
+				clientID:     tt.fields.clientID,
+				secret:       tt.fields.secret,
+				refreshToken: tt.fields.refreshToken,
+				redirectURL:  tt.fields.redirectURL,
+			}
+			if got := c.RedirectURL(); got != tt.want {
+				t.Errorf("gbpConfig.RedirectURL() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

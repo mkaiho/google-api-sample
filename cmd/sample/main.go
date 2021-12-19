@@ -10,12 +10,12 @@ import (
 func main() {
 	ctx := context.Background()
 
-	gbpCredentials, err := infrastructure.LoadGBPCredentialEnv()
+	gbpConfig, err := infrastructure.LoadGBPConfigEnv()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 
-	_, err = infrastructure.NewGBPNotification(ctx, gbpCredentials)
+	_, err = infrastructure.NewGBPNotification(ctx, gbpConfig)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}

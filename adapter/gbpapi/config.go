@@ -1,7 +1,8 @@
 package gbpapi
 
-type GBPCredential interface {
+type GBPConfig interface {
 	ClientID() string
 	ClientSecret() string
 	RefreshToken() string
+	RedirectURL() string
 }
