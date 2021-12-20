@@ -14,15 +14,16 @@ import (
 
 func main() {
 	ctx := context.Background()
-	gbpConfig, err := infrastructure.LoadGBPConfigEnv()
+
+	gcpConfig, err := infrastructure.LoadGCPOAuth2ConfigEnv()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 	config := oauth2.Config{
-		ClientID:     gbpConfig.ClientID(),
-		ClientSecret: gbpConfig.ClientSecret(),
+		ClientID:     gcpConfig.ClientID(),
+		ClientSecret: gcpConfig.ClientSecret(),
 		Endpoint:     google.Endpoint,
-		RedirectURL:  gbpConfig.RedirectURL(),
+		RedirectURL:  gcpConfig.RedirectURL(),
 		Scopes: []string{
 			"https://www.googleapis.com/auth/business.manage",
 			pubsub.ScopeCloudPlatform,

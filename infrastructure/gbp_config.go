@@ -18,21 +18,19 @@ var _ gbpapi.GBPConfig = (*gbpConfig)(nil)
 
 /** Configurations for GBP API **/
 
-func NewGBPConfigEnv(clientID string, secret string, refreshToken string, redirectURL string) gbpapi.GBPConfig {
+func NewGBPConfigEnv(clientID string, secret string, refreshToken string) gbpapi.GBPConfig {
 	return &gbpConfig{
 		clientID:     clientID,
 		secret:       secret,
 		refreshToken: refreshToken,
-		redirectURL:  redirectURL,
 	}
 }
 
 func LoadGBPConfigEnv() (gbpapi.GBPConfig, error) {
 	var env struct {
-		ClientID     string `envconfig:"gbp_client_id" required:"true"`
-		Secret       string `envconfig:"gbp_client_secret" required:"true"`
+		ClientID     string `envconfig:"gcp_client_id" required:"true"`
+		Secret       string `envconfig:"gcp_client_secret" required:"true"`
 		RefreshToken string `envconfig:"gbp_refresh_token" required:"true"`
-		RedirectURL  string `envconfig:"gbp_redirect_url" required:"true"`
 	}
 	if err := LoadEnvToStruct("", &env); err != nil {
 		return nil, fmt.Errorf("failed to GBP configuration: %w", err)
@@ -41,7 +39,6 @@ func LoadGBPConfigEnv() (gbpapi.GBPConfig, error) {
 		clientID:     env.ClientID,
 		secret:       env.Secret,
 		refreshToken: env.RefreshToken,
-		redirectURL:  env.RedirectURL,
 	}, nil
 }
 
@@ -49,7 +46,6 @@ type gbpConfig struct {
 	clientID     string
 	secret       string
 	refreshToken string
-	redirectURL  string
 }
 
 func (c *gbpConfig) ClientID() string {
@@ -64,10 +60,6 @@ func (c *gbpConfig) RefreshToken() string {
 	return c.refreshToken
 }
 
-func (c *gbpConfig) RedirectURL() string {
-	return c.redirectURL
-}
-
 /** Client option for GBP API **/
 
 func newGBPOption(ctx context.Context, config gbpapi.GBPConfig) option.ClientOption {
@@ -75,7 +67,6 @@ func newGBPOption(ctx context.Context, config gbpapi.GBPConfig) option.ClientOpt
 		ClientID:     config.ClientID(),
 		ClientSecret: config.ClientSecret(),
 		Endpoint:     google.Endpoint,
-		RedirectURL:  config.RedirectURL(),
 		Scopes:       gbpScopes,
 	}
 	tokenSource := oauth2config.TokenSource(ctx, &oauth2.Token{

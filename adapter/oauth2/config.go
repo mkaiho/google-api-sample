@@ -1,7 +1,8 @@
-package gbpapi
+package oauth2
 
-type GBPConfig interface {
+type OAuth2Config interface {
 	ClientID() string
 	ClientSecret() string
 	RefreshToken() string
+	RedirectURL() string
 }

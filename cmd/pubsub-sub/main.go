@@ -14,17 +14,16 @@ func main() {
 	var mu sync.Mutex
 	ctx := context.Background()
 
-	gcpConfig, err := infrastructure.LoadGCPConfigEnv()
+	config, err := infrastructure.LoadGCPPubsubConfigEnv()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
-
-	sub, err := infrastructure.NewGCPSubscriber(ctx, gcpConfig.ProjectID(), *gcpConfig)
+	service, err := infrastructure.NewGCPPubsubService(ctx, config)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
-
-	subscription := sub.Subscription(gcpConfig.PubsubSubscription())
+	sub := infrastructure.NewGCPPubsubSubscriber(service)
+	subscription := sub.Subscription(config.Subscription())
 	cctx, cancel := context.WithCancel(ctx)
 
 	fmt.Println("Listening...")

@@ -12,21 +12,20 @@ import (
 func main() {
 	ctx := context.Background()
 
-	gcpConfig, err := infrastructure.LoadGCPConfigEnv()
+	config, err := infrastructure.LoadGCPPubsubConfigEnv()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
-
-	pub, err := infrastructure.NewGCPPublisher(ctx, gcpConfig.ProjectID(), *gcpConfig)
+	service, err := infrastructure.NewGCPPubsubService(ctx, config)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
+	publisher := infrastructure.NewGCPPubsubPublisher(service)
+	topic := publisher.Topic(config.Topic())
 
-	topic := pub.Topic(gcpConfig.PubsubTopic())
 	result := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte("Hello World!"),
 	})
-
 	id, err := result.Get(ctx)
 	if err != nil {
 		log.Fatalf("Error: %v", err)

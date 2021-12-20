@@ -2,45 +2,32 @@ package infrastructure
 
 import (
 	"context"
-	"errors"
 
 	"cloud.google.com/go/pubsub"
 )
 
-/** TODO: Refactoring **/
-
 /** GCP Pub/Sub Subscriber **/
-func NewGCPSubscriber(ctx context.Context, projectID string, config gcpConfig) (*gcpSubscriber, error) {
-	if ctx == nil {
-		return nil, errors.New("ctx is required")
+func NewGCPPubsubSubscriber(service *gcpPubsubService) *gcpPubsubSubscriber {
+	return &gcpPubsubSubscriber{
+		service: service,
 	}
-	opts := newGCPOption(ctx, config)
-	client, err := pubsub.NewClient(ctx, projectID, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	return &gcpSubscriber{
-		client: client,
-	}, nil
 }
 
-type gcpSubscriber struct {
-	client *pubsub.Client
+type gcpPubsubSubscriber struct {
+	service *gcpPubsubService
 }
 
-func (p *gcpSubscriber) Subscription(subscriptionID string) gcpSubscription {
-	subscription := p.client.Subscription(subscriptionID)
-	return gcpSubscription{
-		subscription: subscription,
+func (p *gcpPubsubSubscriber) Subscription(subscriptionID string) *gcpPubsubSubscription {
+	return &gcpPubsubSubscription{
+		subscription: p.service.client.Subscription(subscriptionID),
 	}
 }
 
 /** GCP Pub/Sub Subscription **/
-type gcpSubscription struct {
+type gcpPubsubSubscription struct {
 	subscription *pubsub.Subscription
 }
 
-func (s *gcpSubscription) Receive(ctx context.Context, f func(context.Context, *pubsub.Message)) error {
+func (s *gcpPubsubSubscription) Receive(ctx context.Context, f func(context.Context, *pubsub.Message)) error {
 	return s.subscription.Receive(ctx, f)
 }
