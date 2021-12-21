@@ -8,7 +8,7 @@ import (
 
 func TestParseAccountID(t *testing.T) {
 	type args struct {
-		value int
+		value string
 	}
 	tests := []struct {
 		name    string
@@ -19,26 +19,15 @@ func TestParseAccountID(t *testing.T) {
 		{
 			name: "Return account ID",
 			args: args{
-				value: 1,
+				value: "1",
 			},
-			want:    func() *AccountID { value := AccountID(1); return &value }(),
+			want:    func() *AccountID { value := AccountID("1"); return &value }(),
 			wantErr: assert.NoError,
 		},
 		{
 			name: "Return error when value is 0",
 			args: args{
-				value: 0,
-			},
-			want: nil,
-			wantErr: func(tt assert.TestingT, e error, i ...interface{}) bool {
-				want := "invalid account ID"
-				return assert.EqualError(tt, e, want, "ParseAccountID() error = %v, wantErr %v", e, want)
-			},
-		},
-		{
-			name: "Return error when value is less than 0",
-			args: args{
-				value: -1,
+				value: "",
 			},
 			want: nil,
 			wantErr: func(tt assert.TestingT, e error, i ...interface{}) bool {
@@ -62,17 +51,17 @@ func TestAccountID_Int(t *testing.T) {
 	tests := []struct {
 		name string
 		id   AccountID
-		want int
+		want string
 	}{
 		{
 			name: "Return int value",
-			id:   AccountID(1),
-			want: 1,
+			id:   AccountID("1"),
+			want: "1",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.id.Int()
+			got := tt.id.String()
 			assert.Equal(t, tt.want, got, "AccountID.Int() = %v, want %v", got, tt.want)
 		})
 	}

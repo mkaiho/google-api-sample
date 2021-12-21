@@ -26,7 +26,7 @@ func (n notificationSettingName) AccountID() AccountID {
 }
 
 func (n notificationSettingName) String() string {
-	return fmt.Sprintf("accounts/%d/notificationSetting", n.accountID)
+	return fmt.Sprintf("accounts/%s/notificationSetting", n.accountID)
 }
 
 /** NotificationType **/

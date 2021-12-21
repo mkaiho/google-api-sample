@@ -18,10 +18,10 @@ func TestNewNotificationSettingName(t *testing.T) {
 		{
 			name: "Return notification setting name",
 			args: args{
-				accountID: AccountID(1),
+				accountID: AccountID("1"),
 			},
 			want: notificationSettingName{
-				accountID: AccountID(1),
+				accountID: AccountID("1"),
 			},
 		},
 	}
@@ -45,9 +45,9 @@ func Test_notificationSettingName_AccountID(t *testing.T) {
 		{
 			name: "Return account ID",
 			fields: fields{
-				accountID: AccountID(1),
+				accountID: AccountID("1"),
 			},
-			want: AccountID(1),
+			want: AccountID("1"),
 		},
 	}
 	for _, tt := range tests {
@@ -73,7 +73,7 @@ func Test_notificationSettingName_String(t *testing.T) {
 		{
 			name: "Return account ID",
 			fields: fields{
-				accountID: AccountID(1),
+				accountID: AccountID("1"),
 			},
 			want: "accounts/1/notificationSetting",
 		},

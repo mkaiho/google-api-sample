@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("Error: %v", err)
 	}
 
-	accountID, err := gbpapi.ParseAccountID(123456)
+	accountID, err := gbpapi.ParseAccountID("123456789")
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}

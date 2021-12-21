@@ -1,10 +1,14 @@
 package gbpapi
 
-import "errors"
+import (
+	"errors"
 
-type AccountID int
+	"github.com/mkaiho/google-api-sample/util"
+)
 
-func ParseAccountID(value int) (*AccountID, error) {
+type AccountID string
+
+func ParseAccountID(value string) (*AccountID, error) {
 	id := AccountID(value)
 	if err := id.validate(); err != nil {
 		return nil, err
@@ -12,12 +16,12 @@ func ParseAccountID(value int) (*AccountID, error) {
 	return &id, nil
 }
 
-func (id AccountID) Int() int {
-	return int(id)
+func (id AccountID) String() string {
+	return string(id)
 }
 
 func (id AccountID) validate() error {
-	if id <= 0 {
+	if util.IsEmptyString(id.String()) {
 		return errors.New("invalid account ID")
 	}
 
